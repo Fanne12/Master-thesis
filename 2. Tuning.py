@@ -43,7 +43,7 @@ T304_tfidf_new = tfidfvect.fit_transform(df_emails_T304_new["Pre-processed body"
 word2vec_model = KeyedVectors.load("word2vec_pretrained_model")
 
 def get_average_word2vec(text_list, k=300):
-  """Produces word2vec k-dimensional embeddings for the text in text_list"""
+    """Produces word2vec k-dimensional embeddings for the text in text_list"""
     tokenizer = RegexpTokenizer(r'\w+')
     embedding_list = []
     for text in text_list:
@@ -68,7 +68,7 @@ tokenizer = AutoTokenizer.from_pretrained("BERT_tokenizer")
 model = AutoModel.from_pretrained("BERT_model").to(device)
 
 def get_BERT_embed(text_list):
-  """Produces BERT embeddings for the text in text_list"""
+    """Produces BERT embeddings for the text in text_list"""
     embedding_list = []
     for text in text_list:
         texts_BERT = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
@@ -84,12 +84,12 @@ T304_bert_new = get_BERT_embed(df_emails_T304_new["Pre-processed body"])
 
 # %% Tuning
 def tuning_grid(data, classifier, grid, topic):
-  """Performs hyperparameter tuning using 5-fold grid search CV 
-  data: np.appray of the vectorized predictors of the email data of topic 'topic' 
-  classifier: the sklearn classifier function of which the hyperparameters need to be tuned 
-  grid: the grid that needs to be searched for the optimal set of hyperparameters
-  topic: the topic of the email dataset that is used ('303'or '304')
-  """
+    """Performs hyperparameter tuning using 5-fold grid search CV 
+    data: np.appray of the vectorized predictors of the email data of topic 'topic' 
+    classifier: the sklearn classifier function of which the hyperparameters need to be tuned 
+    grid: the grid that needs to be searched for the optimal set of hyperparameters
+    topic: the topic of the email dataset that is used ('303'or '304')
+    """
     if topic == '303':
         X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(data, df_emails_T303_new["Topic 303"], test_size=0.33, random_state=20252001)
     elif topic == '304':
