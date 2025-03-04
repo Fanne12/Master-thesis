@@ -18,4 +18,6 @@ This repository contains the Python code that was written to produce the results
    f. evaluate the XAI explanations that were produced in terms of AOL, AOH, Fidelity and Stability  
 5. "5. email_xai":  
    a. produces LIME and SHAP explanations for the predictions of the Word2Vec vectorized email datasets  
-   b. evaluates the XAI explanations that were produces in terms of Fidelity and Stability  
+   b. evaluates the XAI explanations that were produces in terms of Fidelity and Stability
+
+The datasets containing the emails and annotations of that were used, were donwloaded from https://trec-legal.umiacs.umd.edu/corpora/trec/legal10/?C=M;O=A and https://trec.nist.gov/data/legal10.html, respectively. 
