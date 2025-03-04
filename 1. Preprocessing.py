@@ -232,6 +232,7 @@ def preprocess_new(df_emails_cleaned):
     # Tags from treebank (hence nltk) are different than the ones used for lemmatization (wordnet), so need to map the treebank tags to wordnet tags
     # get_wordnet_pos function is from https://codefinity.com/courses/v2/c68c1f2e-2c90-4d5d-8db9-1e97ca89d15e/026d736a-1860-4e3e-a915-b926ca2d9ed8/b9469e7f-9eb7-40ce-8941-2fb946782907
     def get_wordnet_pos(treebank_tag):
+        """'Translates' the treebank tags to wordnet tags"""
         if treebank_tag.startswith('J'):
             return wordnet.ADJ
         elif treebank_tag.startswith('V'):
