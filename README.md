@@ -1,0 +1,6 @@
+This repository contains the Python code that was written to produce the results for my Master's thesis titled "The use of Explainable AI for Email Classification by Machine Learning Algorithms in the field of eDiscovery". The code is organized as follows:
+1. "1. Preprocessing.py": contains the code to load the email data into Python and perform the necessary data cleaning and pre-processing steps.
+2. "2. Tuning.py": contains the code that was used to tune the hyperparameters of the Random Forest, Support Vector Machine and Neural Network classifiers on three different types of vectorized email datasets: TF-IDF, Word2Vec and BERT.
+3. "3. Classification": contains the code that was used to perform the email classification using the hyperparameter settings found by running "2. Tuning.py".
+4. "4. Simulation": contains the code that was used to investigate the email data and construct the synthetic datasets. It also includes the code to perform hyperparameter tuning and implement classification and XAI on the synthetic datasets. Finally, it contains the code to evaluate the XAI explanations that were produced.
+5. "5. email_XAI": contains the code that was used to produce and evaluate the XAI explanations on the Word2Vec vectorized email datasets.
