@@ -20,7 +20,7 @@ from nltk.corpus import words
 
 def load_annotations():
     """Load the annotations of the TREC 2010 Legal interactive task into a dataframe
-    and select only the rows corresponding to topic 303 or 304"""
+    and select only the rows corresponding to topic 303 and 304"""
     main_path = r"C:\Users\fconijn\OneDrive - KPMG\Documents\Thesis\Code"
     
     # Import 2010 annotations
@@ -37,10 +37,10 @@ def load_annotations():
 # ######################################################################################
 
 def load_emails(df_2010_interactive):
-    """Load the email data, corresponding to the emails with docid in df_2010_interactive"""
+    """Load the email data, corresponding to the emails with docid in df_2010_interactive to only select emails that are used in the TREC 2010 Legal interactive task"""
     main_path = r"C:\Users\fconijn\OneDrive - KPMG\Documents\Thesis\Code\Enron folders"
 
-    #Docids to be filtered
+    # Docids to be filtered
     docids_to_filter = df_2010_interactive["Docid"].tolist() 
 
     # Collect the folder names of the 
@@ -78,9 +78,6 @@ def load_emails(df_2010_interactive):
 
 def clean_emails(df_emails_2010_I):
     """Cleaning the email data and extracting the body of the emails"""
-    # TODO think about what to do with attachments, those are removed when extracting the email body. They do not contain the 'body identifiers'
-    # but make up large proportion of the dataset
-
     # Remove .txt from the file names
     df_emails_2010_I["File Name"] = df_emails_2010_I["File Name"].str.replace(".txt", "")
 
@@ -98,11 +95,9 @@ def clean_emails(df_emails_2010_I):
     # ***********
     # EDRM Enron Email Data Set has been produced in EML, PST and NSF format by ZL Technologies, Inc. This Data Set is licensed under a Creative Commons Attribution 3.0 United States License <http://creativecommons.org/licenses/by/3.0/us/> . To provide attribution, please cite to "ZL Technologies, Inc. (http://www.zlti.com)."
     # ***********
-
     end_string_body = '\n\n***********\nEDRM Enron Email Data Set has been produced in EML, PST and NSF format by ZL Technologies, Inc. This Data Set is licensed under a Creative Commons Attribution 3.0 United States License <http://creativecommons.org/licenses/by/3.0/us/> . To provide attribution, please cite to "ZL Technologies, Inc. (http://www.zlti.com)."\n***********\n'
     end_string_body_escaped = re.escape(end_string_body)
 
-    # There are 24764 (1 less than the total, think because of empty email) that contain both the 'end string_body' and the 'X-ZLID:'
     # Extract the body part including the 'X-ZLID' en '****' parts
     df_emails_2010_I["Body"] = df_emails_2010_I["Email"].str.extract(fr'(X-ZLID:.*{end_string_body_escaped})', flags=re.DOTALL)
     # Remove the 'X-ZLID part'
@@ -138,7 +133,7 @@ def add_annotations(df_annotations, df_emails):
 # --------------------- Pre-processing the email data  --------------------- 
 # ######################################################################################
 def preprocess_new(df_emails_cleaned):
-    """Performs the pre-processing steps to the annotated email dataset"""
+    """Performs the pre-processing steps to the cleaned annotated email dataset"""
     # Make copy of dataframe's relevant columns to new dataframe to perform pre-processing steps 
     df_emails_preprocessed = df_emails_cleaned[["Docid","Body", "Topic 303", "Topic 304"]].copy(deep=True)
 
@@ -159,11 +154,12 @@ def preprocess_new(df_emails_cleaned):
     df_emails_preprocessed["Body"] = df_emails_preprocessed["Body"].str.replace(r"(?<=\s)'|'(?=\s)", ' ', regex=True) # only remove ' when preceded or followed by whitespace, so it won't be deleted in for example it's, but will be deleted for 'fjfj'
     # Remove 1-letter words
     df_emails_preprocessed["Body"] = df_emails_preprocessed["Body"].str.replace(r'\b\w\b', '', regex=True)
-    # Additionally, upon reviewing the text, remove words strings containing 'com', 'cc' (or all email adresses in earlier step)
+    # Remove words strings containing 'com', 'cc' 
     df_emails_preprocessed["Body"] = df_emails_preprocessed["Body"].str.replace(r'\b(?:com|cc)\b', '', regex=True)
 
    # Extend contractions
     def extend_contractions(text):
+        """Extend contractions in text"""
         return contractions.fix(text)
     
     df_emails_preprocessed["Body"] = df_emails_preprocessed["Body"].apply(extend_contractions)
@@ -171,7 +167,7 @@ def preprocess_new(df_emails_cleaned):
     # Remove 's
     df_emails_preprocessed["Body"] = df_emails_preprocessed["Body"].str.replace("'s", '') # remove 's  as this showed problems when making word2vec embeddings (market's was not in the corpora for example)
 
-    # Remove any name from the text (check if it occurs in names_total)
+    # Remove any name from the text 
     nltk.download("names")
     names_m = [i.lower() for i in names.words('male.txt')]
     names_f = [i.lower() for i in names.words('female.txt')]
@@ -184,6 +180,7 @@ def preprocess_new(df_emails_cleaned):
     nltk.download("words")
     words_corpus = set(word.lower() for word in words.words())
     def filter_short_words(text):
+        """Remove words of less than 4 letters if they are not actually words (often abbreviations)"""
         filtered_text = ' '.join(word for word in text.split() if len(word)>=4 or word.lower() in words_corpus)
         return filtered_text
     
@@ -207,6 +204,7 @@ def preprocess_new(df_emails_cleaned):
 
     # Remove None words
     def remove_None(token_list):
+        """Remove None words"""
         no_None_token_list = [token for token in token_list if not token is None]
         return no_None_token_list
 
@@ -232,7 +230,7 @@ def preprocess_new(df_emails_cleaned):
     nltk.download('averaged_perceptron_tagger')
 
     # Tags from treebank (hence nltk) are different than the ones used for lemmatization (wordnet), so need to map the treebank tags to wordnet tags
-    # Below function copied from https://codefinity.com/courses/v2/c68c1f2e-2c90-4d5d-8db9-1e97ca89d15e/026d736a-1860-4e3e-a915-b926ca2d9ed8/b9469e7f-9eb7-40ce-8941-2fb946782907
+    # get_wordnet_pos function is from https://codefinity.com/courses/v2/c68c1f2e-2c90-4d5d-8db9-1e97ca89d15e/026d736a-1860-4e3e-a915-b926ca2d9ed8/b9469e7f-9eb7-40ce-8941-2fb946782907
     def get_wordnet_pos(treebank_tag):
         if treebank_tag.startswith('J'):
             return wordnet.ADJ
