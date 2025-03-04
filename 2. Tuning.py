@@ -64,8 +64,8 @@ T304_w2v_new = get_average_word2vec(df_emails_T304_new["Pre-processed body"])
 # bert
 # Load the pre-trained BERT model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-tokenizer = AutoTokenizer.from_pretrained("BERT_tokenizer")
-model = AutoModel.from_pretrained("BERT_model").to(device)
+tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+model = AutoModel.from_pretrained("distilbert-base-uncased").to(device)
 
 def get_BERT_embed(text_list):
     """Produces BERT embeddings for the text in text_list"""
