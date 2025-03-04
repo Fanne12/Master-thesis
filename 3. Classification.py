@@ -42,7 +42,7 @@ T304_tfidf = tfidfvect.fit_transform(df_emails_T304["Pre-processed body"])
 
 # word2vec
 # Load the pre-trained word2vec model
-word2vec_model = KeyedVectors.load("word2vec_pretrained_model")
+word2vec_model = api.load("word2vec-google-news-300") 
 
 def get_average_word2vec(text_list, k=300):
     """Produces word2vec k-dimensional embeddings for the text in text_list"""
